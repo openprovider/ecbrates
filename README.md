@@ -56,4 +56,4 @@ Thank you for your understanding!
 
 ## License
 
-[MIT Public License](https://github.com/takama/daemon/blob/master/LICENSE)
+[MIT Public License](https://github.com/takama/ecbrates/blob/master/LICENSE)
