@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 /*
-Package ecbrates 0.1.1
+Package ecbrates 0.1.2
 
 Example:
 
@@ -42,6 +42,7 @@ import (
 	"net/http"
 )
 
+// Links to all supported currencies
 const (
 	EUR Currency = "EUR"
 	USD Currency = "USD"
@@ -77,23 +78,26 @@ const (
 	THB Currency = "THB"
 	ZAR Currency = "ZAR"
 
-	rates_URL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
+	ratesURL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
 )
 
+// Currency type as link to string
 type Currency string
 
+// Rates are date and currency exchange rates
 type Rates struct {
 	Date string
 	Rate map[Currency]float32
 }
 
+// New - create new instance of rates and fetch data from ECB
 func New() (*Rates, error) {
 	r := new(Rates)
 	err := r.fetch()
 	return r, err
 }
 
-// Convert value "from" -> "to"
+// Convert amount value "from" one Currency -> "to" other Currency
 func (r *Rates) Convert(value float32, from, to Currency) float32 {
 	return round32(value*r.Rate[to]/r.Rate[from], 4)
 }
@@ -116,7 +120,7 @@ func (r *Rates) fetch() error {
 	// a exchange rates fetched relatively the EUR currency
 	r.Rate[EUR] = 1
 
-	response, err := http.Get(rates_URL)
+	response, err := http.Get(ratesURL)
 	if err != nil {
 		return err
 	}
