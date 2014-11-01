@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 /*
-Package ecbrates 0.1.1
+Package ecbrates 0.1.2
 
 Example:
 
