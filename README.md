@@ -1,7 +1,7 @@
-European Central Bank Exchange Rates
+European Central Bank exchange rates
 ====================================
 
-A package to get ECB exchange rates for use with Go (golang) services with no dependencies
+A package to get the ECB exchange rates for use with Go (golang) services
 
 [![Build Status](https://travis-ci.org/takama/ecbrates.png?branch=master)](https://travis-ci.org/takama/ecbrates)
 [![GoDoc](https://godoc.org/github.com/takama/ecbrates?status.svg)](https://godoc.org/github.com/takama/ecbrates)
@@ -24,16 +24,16 @@ func main() {
 		log.Fatal("Error: ", err)
 	}
 
-	// Variant 1: get dollar rate relative to euro
+	// Case 1: get dollar rate relative to euro
 	fmt.Println("Exchange rate", r.Date, ": EUR 1 -> USD", r.Rate[ecbrates.USD])
 
-	// Variant 2: convert of 100 euros to dollars
+	// Case 2: convert of 100 euros to dollars
 	fmt.Println(
 		"Exchange rate", r.Date,
 		": EUR 100.0 -> USD", r.Convert(100, ecbrates.EUR, ecbrates.USD),
 	)
 
-	// Variant 3: convert of 100 dollars to yens
+	// Case 3: convert of 100 dollars to yens
 	fmt.Println(
 		"Exchange rate", r.Date,
 		": USD 100.0 -> JPY", r.Convert(100, ecbrates.USD, ecbrates.JPY),
