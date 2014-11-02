@@ -1,7 +1,7 @@
-European Central Bank Exchange Rates
+European Central Bank exchange rates
 ====================================
 
-A package to get ECB exchange rates for use with Go (golang) services with no dependencies
+A package to get the ECB exchange rates for use with Go (golang) services
 
 [![Build Status](https://travis-ci.org/takama/ecbrates.png?branch=master)](https://travis-ci.org/takama/ecbrates)
 [![GoDoc](https://godoc.org/github.com/takama/ecbrates?status.svg)](https://godoc.org/github.com/takama/ecbrates)
