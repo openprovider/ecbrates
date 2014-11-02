@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 /*
-Package ecbrates 0.1.2
+Package ecbrates 0.1.3
 
 Example:
 
@@ -22,17 +22,17 @@ Example:
 			log.Fatal("Error: ", err)
 		}
 
-		// Variant 1: get dollar rate relative to euro
+		// Case 1: get dollar rate relative to euro
 		fmt.Println("Exchange rate", r.Date, ": EUR 1 -> USD", r.Rate[ecbrates.USD])
 
-		// Variant 2: convert of 100 euros to dollars
+		// Case 2: convert of 100 euros to dollars
 		fmt.Println(
 			"Exchange rate", r.Date,
 			": EUR 100.0 -> USD", r.Convert(100, ecbrates.EUR, ecbrates.USD),
 		)
 	}
 
-European Central Bank Exchange Rates
+European Central Bank exchange rates
 */
 package ecbrates
 
@@ -81,23 +81,23 @@ const (
 	ratesURL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
 )
 
-// Currency type as link to string
+// Currency type as a link to string
 type Currency string
 
-// Rates are date and currency exchange rates
+// Rates represent date and currency exchange rates
 type Rates struct {
 	Date string
 	Rate map[Currency]float32
 }
 
-// New - create new instance of rates and fetch data from ECB
+// New - create a new instance of the rates and fetch a data from ECB
 func New() (*Rates, error) {
 	r := new(Rates)
 	err := r.fetch()
 	return r, err
 }
 
-// Convert amount value "from" one Currency -> "to" other Currency
+// Convert a value "from" one Currency -> "to" other Currency
 func (r *Rates) Convert(value float32, from, to Currency) float32 {
 	return round32(value*r.Rate[to]/r.Rate[from], 4)
 }
@@ -113,11 +113,11 @@ type envelope struct {
 	} `xml:"Cube>Cube"`
 }
 
-// Fetch exchange rates
+// Fetch an exchange rates
 func (r *Rates) fetch() error {
 	r.Rate = make(map[Currency]float32)
 
-	// a exchange rates fetched relatively the EUR currency
+	// an exchange rates fetched relatively the EUR currency
 	r.Rate[EUR] = 1
 
 	response, err := http.Get(ratesURL)
