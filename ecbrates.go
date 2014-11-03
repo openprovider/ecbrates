@@ -26,10 +26,9 @@ Example:
 		fmt.Println("Exchange rate", r.Date, ": EUR 1 -> USD", r.Rate[ecbrates.USD])
 
 		// Case 2: convert of 100 euros to dollars
-		fmt.Println(
-			"Exchange rate", r.Date,
-			": EUR 100.0 -> USD", r.Convert(100, ecbrates.EUR, ecbrates.USD),
-		)
+		if value, err := r.Convert(100, ecbrates.EUR, ecbrates.USD); err == nil {
+			fmt.Println("Exchange rate", r.Date, ": EUR 100.0 -> USD", value)
+		}
 	}
 
 European Central Bank exchange rates
@@ -38,6 +37,7 @@ package ecbrates
 
 import (
 	"encoding/xml"
+	"errors"
 	"math"
 	"net/http"
 )
@@ -98,8 +98,11 @@ func New() (*Rates, error) {
 }
 
 // Convert a value "from" one Currency -> "to" other Currency
-func (r *Rates) Convert(value float32, from, to Currency) float32 {
-	return round32(value*r.Rate[to]/r.Rate[from], 4)
+func (r *Rates) Convert(value float32, from, to Currency) (float32, error) {
+	if r.Rate[to] == 0 || r.Rate[from] == 0 {
+		return 0, errors.New("Perhaps one of the values ​​of currencies is zero")
+	}
+	return round32(value*r.Rate[to]/r.Rate[from], 4), nil
 }
 
 // ECB XML envelope

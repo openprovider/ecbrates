@@ -17,14 +17,12 @@ func main() {
 	fmt.Println("Exchange rate", r.Date, ": EUR 1 -> USD", r.Rate[ecbrates.USD])
 
 	// Case 2: convert of 100 euros to dollars
-	fmt.Println(
-		"Exchange rate", r.Date,
-		": EUR 100.0 -> USD", r.Convert(100, ecbrates.EUR, ecbrates.USD),
-	)
+	if value, err := r.Convert(100, ecbrates.EUR, ecbrates.USD); err == nil {
+		fmt.Println("Exchange rate", r.Date, ": EUR 100.0 -> USD", value)
+	}
 
 	// Case 3: convert of 100 dollars to yens
-	fmt.Println(
-		"Exchange rate", r.Date,
-		": USD 100.0 -> JPY", r.Convert(100, ecbrates.USD, ecbrates.JPY),
-	)
+	if value, err := r.Convert(100, ecbrates.USD, ecbrates.JPY); err == nil {
+		fmt.Println("Exchange rate", r.Date, ": USD 100.0 -> JPY", value)
+	}
 }
