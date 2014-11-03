@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 /*
-Package ecbrates 0.1.4
+Package ecbrates 0.1.5
 
 Example:
 
@@ -23,7 +23,9 @@ Example:
 		}
 
 		// Case 1: get dollar rate relative to euro
-		fmt.Println("Exchange rate", r.Date, ": EUR 1 -> USD", r.Rate[ecbrates.USD])
+		if value, ok := r.Rate[ecbrates.USD].(string); ok {
+			fmt.Println("Exchange rate", r.Date, ": EUR 1 -> USD", value)
+		}
 
 		// Case 2: convert of 100 euros to dollars
 		if value, err := r.Convert(100, ecbrates.EUR, ecbrates.USD); err == nil {
@@ -40,6 +42,7 @@ import (
 	"errors"
 	"math"
 	"net/http"
+	"strconv"
 )
 
 // Links to all supported currencies
@@ -87,7 +90,7 @@ type Currency string
 // Rates represent date and currency exchange rates
 type Rates struct {
 	Date string
-	Rate map[Currency]float32
+	Rate map[Currency]interface{}
 }
 
 // New - create a new instance of the rates and fetch a data from ECB
@@ -98,11 +101,26 @@ func New() (*Rates, error) {
 }
 
 // Convert a value "from" one Currency -> "to" other Currency
-func (r *Rates) Convert(value float32, from, to Currency) (float32, error) {
-	if r.Rate[to] == 0 || r.Rate[from] == 0 {
-		return 0, errors.New("Perhaps one of the values ​​of currencies is zero")
+func (r *Rates) Convert(value float64, from, to Currency) (float64, error) {
+	if r.Rate[to] == nil || r.Rate[from] == nil {
+		return 0, errors.New("Perhaps one of the values ​​of currencies does not exist")
 	}
-	return round32(value*r.Rate[to]/r.Rate[from], 4), nil
+	errorMessage := "Perhaps one of the values ​​of currencies could not parsed correctly"
+	strFrom, okFrom := r.Rate[from].(string)
+	strTo, okTo := r.Rate[to].(string)
+	if !okFrom || !okTo {
+		return 0, errors.New(errorMessage)
+	}
+	vFrom, err := strconv.ParseFloat(strFrom, 32)
+	if err != nil {
+		return 0, errors.New(errorMessage)
+	}
+	vTo, err := strconv.ParseFloat(strTo, 32)
+	if err != nil {
+		return 0, errors.New(errorMessage)
+	}
+	return round64(value*round64(vTo, 4)/round64(vFrom, 4), 4), nil
+
 }
 
 // ECB XML envelope
@@ -110,18 +128,18 @@ type envelope struct {
 	Data struct {
 		Date  string `xml:"time,attr"`
 		Rates []struct {
-			Currency string  `xml:"currency,attr"`
-			Rate     float32 `xml:"rate,attr"`
+			Currency string `xml:"currency,attr"`
+			Rate     string `xml:"rate,attr"`
 		} `xml:"Cube"`
 	} `xml:"Cube>Cube"`
 }
 
 // Fetch an exchange rates
 func (r *Rates) fetch() error {
-	r.Rate = make(map[Currency]float32)
+	r.Rate = make(map[Currency]interface{})
 
 	// an exchange rates fetched relatively the EUR currency
-	r.Rate[EUR] = 1
+	r.Rate[EUR] = "1"
 
 	response, err := http.Get(ratesURL)
 	if err != nil {
@@ -144,8 +162,8 @@ func (r *Rates) fetch() error {
 	return nil
 }
 
-func round32(x float32, prec int) float32 {
-	if math.IsNaN(float64(x)) || math.IsInf(float64(x), 0) {
+func round64(x float64, prec int) float64 {
+	if math.IsNaN(x) || math.IsInf(x, 0) {
 		return x
 	}
 
@@ -157,7 +175,7 @@ func round32(x float32, prec int) float32 {
 
 	var rounder float64
 	pow := math.Pow(10, float64(prec))
-	intermed := float64(x) * pow
+	intermed := x * pow
 	_, frac := math.Modf(intermed)
 
 	if frac >= 0.5 {
@@ -166,5 +184,5 @@ func round32(x float32, prec int) float32 {
 		rounder = math.Floor(intermed)
 	}
 
-	return float32(rounder / pow * sign)
+	return rounder / pow * sign
 }
