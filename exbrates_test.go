@@ -14,7 +14,20 @@ func TestFetchExchangeRates(t *testing.T) {
 		t.Error(err)
 	}
 	expected := round32(100.0*r.Rate[USD], 4)
-	if expected != r.Convert(100, EUR, USD) {
-		t.Error("Expected rate", expected, "got", r.Convert(100, EUR, USD))
+	value, err := r.Convert(100, EUR, USD)
+	if err != nil {
+		t.Error("Converting error:", err)
+	}
+	if expected != value {
+		t.Error("Expected rate", expected, "got", value)
+	}
+	if _, err = r.Convert(100, Currency("XXX"), USD); err == nil {
+		t.Error("Expected error, got nil")
+	}
+	if _, err = r.Convert(100, USD, Currency("XXX")); err == nil {
+		t.Error("Expected error, got nil")
+	}
+	if _, err = r.Convert(100, Currency("XXX"), Currency("XXX")); err == nil {
+		t.Error("Expected error, got nil")
 	}
 }
