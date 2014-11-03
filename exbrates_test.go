@@ -5,6 +5,7 @@
 package ecbrates
 
 import (
+	"strconv"
 	"testing"
 )
 
@@ -13,7 +14,15 @@ func TestFetchExchangeRates(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	expected := round32(100.0*r.Rate[USD], 4)
+	str, ok := r.Rate[USD].(string)
+	if !ok {
+		t.Error("Parse string error:", err)
+	}
+	v, err := strconv.ParseFloat(str, 32)
+	if !ok {
+		t.Error("Parse float error:", err)
+	}
+	expected := round64(100.0*round64(v, 4), 4)
 	value, err := r.Convert(100, EUR, USD)
 	if err != nil {
 		t.Error("Converting error:", err)

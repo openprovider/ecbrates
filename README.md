@@ -25,7 +25,9 @@ func main() {
 	}
 
 	// Case 1: get dollar rate relative to euro
-	fmt.Println("Exchange rate", r.Date, ": EUR 1 -> USD", r.Rate[ecbrates.USD])
+	if value, ok := r.Rate[ecbrates.USD].(string); ok {
+		fmt.Println("Exchange rate", r.Date, ": EUR 1 -> USD", value)
+	}
 
 	// Case 2: convert of 100 euros to dollars
 	if value, err := r.Convert(100, ecbrates.EUR, ecbrates.USD); err == nil {
