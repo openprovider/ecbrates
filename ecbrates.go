@@ -4,8 +4,9 @@
 
 /*
 Package ecbrates 0.1.6
+This package helps parse the ECB exchange rates and use it for an applications
 
-Example:
+Example 1:
 
 	package main
 
@@ -33,7 +34,32 @@ Example:
 		}
 	}
 
-European Central Bank exchange rates
+Example 2:
+
+	package main
+
+	import (
+		"fmt"
+		"log"
+
+		"github.com/takama/ecbrates"
+	)
+
+	func main() {
+		rates, err := ecbrates.Load()
+		if err != nil {
+			log.Fatal("Error: ", err)
+		}
+
+		// Show history of exchange rates for EUR -> USD
+		for _, r := range rates {
+			if value, ok := r.Rate[ecbrates.USD].(string); ok {
+				fmt.Println("Exchange rate", r.Date, ": EUR 1 -> USD", value)
+			}
+		}
+	}
+
+The European Central Bank exchange rates
 */
 package ecbrates
 
