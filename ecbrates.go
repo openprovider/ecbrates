@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 /*
-Package ecbrates 0.1.5
+Package ecbrates 0.1.6
 
 Example:
 
@@ -45,43 +45,44 @@ import (
 	"strconv"
 )
 
-// Links to all supported currencies
+// List of all supported currencies
 const (
-	EUR Currency = "EUR"
-	USD Currency = "USD"
-	JPY Currency = "JPY"
-	BGN Currency = "BGN"
-	CZK Currency = "CZK"
-	DKK Currency = "DKK"
-	GBP Currency = "GBP"
-	HUF Currency = "HUF"
-	LTL Currency = "LTL"
-	PLN Currency = "PLN"
-	RON Currency = "RON"
-	SEK Currency = "SEK"
-	CHF Currency = "CHF"
-	NOK Currency = "NOK"
-	HRK Currency = "HRK"
-	RUB Currency = "RUB"
-	TRY Currency = "TRY"
-	AUD Currency = "AUD"
-	BRL Currency = "BRL"
-	CAD Currency = "CAD"
-	CNY Currency = "CNY"
-	HKD Currency = "HKD"
-	IDR Currency = "IDR"
-	ILS Currency = "ILS"
-	INR Currency = "INR"
-	KRW Currency = "KRW"
-	MXN Currency = "MXN"
-	MYR Currency = "MYR"
-	NZD Currency = "NZD"
-	PHP Currency = "PHP"
-	SGD Currency = "SGD"
-	THB Currency = "THB"
-	ZAR Currency = "ZAR"
+	AUD Currency = "AUD" // Australian Dollar (A$)
+	BGN Currency = "BGN" // Bulgarian Lev (BGN)
+	BRL Currency = "BRL" // Brazilian Real (R$)
+	CAD Currency = "CAD" // Canadian Dollar (CA$)
+	CHF Currency = "CHF" // Swiss Franc (CHF)
+	CNY Currency = "CNY" // Chinese Yuan (CN¥)
+	CZK Currency = "CZK" // Czech Republic Koruna (CZK)
+	DKK Currency = "DKK" // Danish Krone (DKK)
+	EUR Currency = "EUR" // Euro (€)
+	GBP Currency = "GBP" // British Pound Sterling (£)
+	HKD Currency = "HKD" // Hong Kong Dollar (HK$)
+	HRK Currency = "HRK" // Croatian Kuna (HRK)
+	HUF Currency = "HUF" // Hungarian Forint (HUF)
+	IDR Currency = "IDR" // Indonesian Rupiah (IDR)
+	ILS Currency = "ILS" // Israeli New Sheqel (₪)
+	INR Currency = "INR" // Indian Rupee (Rs.)
+	JPY Currency = "JPY" // Japanese Yen (¥)
+	KRW Currency = "KRW" // South Korean Won (₩)
+	LTL Currency = "LTL" // Lithuanian Litas (LTL)
+	MXN Currency = "MXN" // Mexican Peso (MX$)
+	MYR Currency = "MYR" // Malaysian Ringgit (MYR)
+	NOK Currency = "NOK" // Norwegian Krone (NOK)
+	NZD Currency = "NZD" // New Zealand Dollar (NZ$)
+	PHP Currency = "PHP" // Philippine Peso (Php)
+	PLN Currency = "PLN" // Polish Zloty (PLN)
+	RON Currency = "RON" // Romanian Leu (RON)
+	RUB Currency = "RUB" // Russian Ruble (RUB)
+	SEK Currency = "SEK" // Swedish Krona (SEK)
+	SGD Currency = "SGD" // Singapore Dollar (SGD)
+	THB Currency = "THB" // Thai Baht (฿)
+	TRY Currency = "TRY" // Turkish Lira (TRY)
+	USD Currency = "USD" // US Dollar ($)
+	ZAR Currency = "ZAR" // South African Rand (ZAR)
 
-	ratesURL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
+	ratesLastURL   = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
+	rates90daysUrl = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml"
 )
 
 // Currency type as a link to string
@@ -93,11 +94,22 @@ type Rates struct {
 	Rate map[Currency]interface{}
 }
 
+var Currencies = []Currency{
+	AUD, BGN, BRL, CAD, CHF, CNY, CZK, DKK, EUR, GBP, HKD,
+	HRK, HUF, IDR, ILS, INR, JPY, KRW, LTL, MXN, MYR, NOK,
+	NZD, PHP, PLN, RON, RUB, SEK, SGD, THB, TRY, USD, ZAR,
+}
+
 // New - create a new instance of the rates and fetch a data from ECB
 func New() (*Rates, error) {
 	r := new(Rates)
-	err := r.fetch()
+	err := r.fetchDay()
 	return r, err
+}
+
+// Load - create a new instances of the rates and fetch a historical data from ECB
+func Load() ([]Rates, error) {
+	return fetch90days()
 }
 
 // Convert a value "from" one Currency -> "to" other Currency
@@ -125,7 +137,7 @@ func (r *Rates) Convert(value float64, from, to Currency) (float64, error) {
 
 // ECB XML envelope
 type envelope struct {
-	Data struct {
+	Data []struct {
 		Date  string `xml:"time,attr"`
 		Rates []struct {
 			Currency string `xml:"currency,attr"`
@@ -135,13 +147,9 @@ type envelope struct {
 }
 
 // Fetch an exchange rates
-func (r *Rates) fetch() error {
-	r.Rate = make(map[Currency]interface{})
+func (r *Rates) fetchDay() error {
 
-	// an exchange rates fetched relatively the EUR currency
-	r.Rate[EUR] = "1"
-
-	response, err := http.Get(ratesURL)
+	response, err := http.Get(ratesLastURL)
 	if err != nil {
 		return err
 	}
@@ -153,13 +161,55 @@ func (r *Rates) fetch() error {
 		return err
 	}
 
-	r.Date = raw.Data.Date
+	for _, day := range raw.Data {
+		r.Rate = make(map[Currency]interface{})
 
-	for _, item := range raw.Data.Rates {
-		r.Rate[Currency(item.Currency)] = item.Rate
+		// an exchange rates fetched relatively the EUR currency
+		r.Rate[EUR] = "1"
+
+		r.Date = day.Date
+
+		for _, item := range day.Rates {
+			r.Rate[Currency(item.Currency)] = item.Rate
+		}
+		break
 	}
 
 	return nil
+}
+
+// Fetch a lot of exchange rates
+func fetch90days() ([]Rates, error) {
+
+	var rates []Rates
+
+	response, err := http.Get(rates90daysUrl)
+	if err != nil {
+		return rates, err
+	}
+	defer response.Body.Close()
+
+	var raw envelope
+
+	if err := xml.NewDecoder(response.Body).Decode(&raw); err != nil {
+		return rates, err
+	}
+
+	for _, day := range raw.Data {
+
+		var r Rates
+		r.Rate = make(map[Currency]interface{})
+
+		// an exchange rates fetched relatively the EUR currency
+		r.Rate[EUR] = "1"
+
+		r.Date = day.Date
+		for _, item := range day.Rates {
+			r.Rate[Currency(item.Currency)] = item.Rate
+		}
+		rates = append(rates, r)
+	}
+	return rates, nil
 }
 
 func round64(x float64, prec int) float64 {
