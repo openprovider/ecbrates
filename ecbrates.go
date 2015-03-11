@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 /*
-Package ecbrates 0.1.8
+Package ecbrates 0.1.9
 This package helps parse the ECB exchange rates and use it for an applications
 
 Example 1:
