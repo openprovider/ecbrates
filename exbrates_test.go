@@ -1,7 +1,3 @@
-// Copyright 2014 Igor Dolzhikov. All rights reserved.
-// Use of this source code is governed by a license
-// that can be found in the LICENSE file.
-
 package ecbrates
 
 import (
@@ -17,14 +13,14 @@ func TestFetchExchangeRates(t *testing.T) {
 	if r.Date == "" {
 		t.Error("Date is empty")
 	}
-	if len(r.Rate) != len(Currencies) {
-		t.Error("Insufficient count of rates, got", len(r.Rate), "for", r.Date)
-	}
 
-	for _, currency := range Currencies {
-		str, ok := r.Rate[currency].(string)
+	for currency, rate := range r.Rate {
+		str, ok := rate.(string)
 		if !ok {
 			t.Error("Parse string error:", err)
+		}
+		if !currency.IsValid() {
+			t.Error("Unknown currency type", currency)
 		}
 		v, err := strconv.ParseFloat(str, 32)
 		if !ok {
@@ -63,11 +59,11 @@ func TestFetchAllExchangeRates(t *testing.T) {
 		if item.Date == "" {
 			t.Error("Date is empty")
 		}
-		if len(item.Rate) != len(Currencies) {
-			t.Error("Day:", item.Date, "Insufficient count of rates, got", len(item.Rate))
-		}
-		for _, currency := range Currencies {
-			if str, ok := item.Rate[currency].(string); ok {
+		for currency, rate := range item.Rate {
+			if !currency.IsValid() {
+				t.Error("Unknown currency type", currency)
+			}
+			if str, ok := rate.(string); ok {
 				if v, err := strconv.ParseFloat(str, 32); err == nil {
 					if v == 0 {
 						t.Error("Day:", item.Date, "Zero rate for", currency)
