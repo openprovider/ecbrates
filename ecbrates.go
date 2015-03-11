@@ -1,9 +1,9 @@
-// Copyright 2014 Igor Dolzhikov. All rights reserved.
+// Copyright 2015 Igor Dolzhikov. All rights reserved.
 // Use of this source code is governed by a license
 // that can be found in the LICENSE file.
 
 /*
-Package ecbrates 0.1.8
+Package ecbrates 0.1.9
 This package helps parse the ECB exchange rates and use it for an applications
 
 Example 1:
@@ -108,7 +108,7 @@ const (
 	ZAR Currency = "ZAR" // South African Rand (ZAR)
 
 	ratesLastURL   = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
-	rates90daysUrl = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml"
+	rates90daysURL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml"
 )
 
 // Currency type as a link to string
@@ -120,10 +120,22 @@ type Rates struct {
 	Rate map[Currency]interface{}
 }
 
+// Currencies are valid values for currency
 var Currencies = []Currency{
 	AUD, BGN, BRL, CAD, CHF, CNY, CZK, DKK, EUR, GBP, HKD,
 	HRK, HUF, IDR, ILS, INR, JPY, KRW, LTL, MXN, MYR, NOK,
 	NZD, PHP, PLN, RON, RUB, SEK, SGD, THB, TRY, USD, ZAR,
+}
+
+// IsValid check Currency for valid value
+func (c Currency) IsValid() bool {
+	for _, value := range Currencies {
+		if value == c {
+			return true
+		}
+	}
+
+	return false
 }
 
 // New - create a new instance of the rates and fetch a data from ECB
@@ -209,7 +221,7 @@ func fetch90days() ([]Rates, error) {
 
 	var rates []Rates
 
-	response, err := http.Get(rates90daysUrl)
+	response, err := http.Get(rates90daysURL)
 	if err != nil {
 		return rates, err
 	}
