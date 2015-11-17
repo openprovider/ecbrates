@@ -67,7 +67,7 @@ func main() {
 }
 ```
 
-## Author
+## Authors
 
 [Igor Dolzhikov](https://github.com/takama)
 
