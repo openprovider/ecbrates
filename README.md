@@ -3,8 +3,8 @@ The European Central Bank exchange rates
 
 A package to get the ECB exchange rates for use with Go (golang) services
 
-[![Build Status](https://travis-ci.org/takama/ecbrates.png?branch=master)](https://travis-ci.org/takama/ecbrates)
-[![GoDoc](https://godoc.org/github.com/takama/ecbrates?status.svg)](https://godoc.org/github.com/takama/ecbrates)
+[![Build Status](https://travis-ci.org/openprovider/ecbrates.svg?branch=master)](https://travis-ci.org/openprovider/ecbrates)
+[![GoDoc](https://godoc.org/github.com/openprovider/ecbrates?status.svg)](https://godoc.org/github.com/openprovider/ecbrates)
 
 ### Examples
 
@@ -76,10 +76,9 @@ func main() {
 All the contributors are welcome. If you would like to be the contributor please accept some rules.
 - The pull requests will be accepted only in "develop" branch
 - All modifications or additions should be tested
-- Sorry, I'll not accept code with any dependency, only standard library
 
 Thank you for your understanding!
 
 ## License
 
-[MIT Public License](https://github.com/takama/ecbrates/blob/master/LICENSE)
+[MIT Public License](https://github.com/openprovider/ecbrates/blob/master/LICENSE)

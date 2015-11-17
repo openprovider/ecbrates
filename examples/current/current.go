@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/takama/ecbrates"
+	"github.com/openprovider/ecbrates"
 )
 
 func main() {
