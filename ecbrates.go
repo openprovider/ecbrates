@@ -14,7 +14,7 @@ Example 1:
 		"fmt"
 		"log"
 
-		"github.com/takama/ecbrates"
+		"github.com/openprovider/ecbrates"
 	)
 
 	func main() {
@@ -42,7 +42,7 @@ Example 2:
 		"fmt"
 		"log"
 
-		"github.com/takama/ecbrates"
+		"github.com/openprovider/ecbrates"
 	)
 
 	func main() {
