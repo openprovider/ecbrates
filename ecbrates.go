@@ -1,9 +1,9 @@
-// Copyright 2015 Igor Dolzhikov. All rights reserved.
+// Copyright 2015 Openprovider Authors. All rights reserved.
 // Use of this source code is governed by a license
 // that can be found in the LICENSE file.
 
 /*
-Package ecbrates 0.1.9
+Package ecbrates 0.2.0
 This package helps parse the ECB exchange rates and use it for an applications
 
 Example 1:
@@ -14,7 +14,7 @@ Example 1:
 		"fmt"
 		"log"
 
-		"github.com/takama/ecbrates"
+		"github.com/openprovider/ecbrates"
 	)
 
 	func main() {
@@ -42,7 +42,7 @@ Example 2:
 		"fmt"
 		"log"
 
-		"github.com/takama/ecbrates"
+		"github.com/openprovider/ecbrates"
 	)
 
 	func main() {
