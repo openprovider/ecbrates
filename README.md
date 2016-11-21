@@ -54,7 +54,8 @@ import (
 )
 
 func main() {
-	rates, err := ecbrates.Load()
+	rates, err := ecbrates.Load() // 90 days history
+	// rates, err := ecbrates.LoadAll() // ALL history
 	if err != nil {
 		log.Fatal("Error: ", err)
 	}
