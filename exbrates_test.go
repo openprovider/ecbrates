@@ -46,13 +46,48 @@ func TestFetchExchangeRates(t *testing.T) {
 	}
 }
 
-func TestFetchAllExchangeRates(t *testing.T) {
+func TestFetch90DaysExchangeRates(t *testing.T) {
 	rates, err := Load()
 	if err != nil {
 		t.Error(err)
 	}
 
 	if len(rates) < 50 {
+		t.Error("Insufficient Count of days, got", len(rates))
+	}
+	if len(rates) > 90 {
+		t.Error("Too big Count of days, got", len(rates))
+	}
+	for _, item := range rates {
+		if item.Date == "" {
+			t.Error("Date is empty")
+		}
+		for currency, rate := range item.Rate {
+			if !currency.IsValid() {
+				t.Error("Unknown currency type", currency)
+			}
+			if str, ok := rate.(string); ok {
+				if v, err := strconv.ParseFloat(str, 32); err == nil {
+					if v == 0 {
+						t.Error("Day:", item.Date, "Zero rate for", currency)
+					}
+				} else {
+					t.Error(err)
+				}
+			} else {
+				t.Error("Parse rate to string unsuccessful")
+			}
+		}
+	}
+}
+
+func TestFetchAllExchangeRates(t *testing.T) {
+	rates, err := LoadAll()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(rates) <= 90 {
 		t.Error("Insufficient Count of days, got", len(rates))
 	}
 	for _, item := range rates {
