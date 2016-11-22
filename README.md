@@ -68,17 +68,17 @@ func main() {
 }
 ```
 
-## Authors
+## Contributors (unsorted)
 
-[Igor Dolzhikov](https://github.com/takama)
-
-## Contributors
+ - [Igor Dolzhikov](https://github.com/takama)
+ - [Rafał Krupiński](https://github.com/rafalkrupinski)
 
 All the contributors are welcome. If you would like to be the contributor please accept some rules.
 - The pull requests will be accepted only in "develop" branch
 - All modifications or additions should be tested
 
 Thank you for your understanding!
+
 
 ## License
 
