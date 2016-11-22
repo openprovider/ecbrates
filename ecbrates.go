@@ -3,7 +3,7 @@
 // that can be found in the LICENSE file.
 
 /*
-Package ecbrates 0.2.0
+Package ecbrates 0.3.0
 This package helps parse the ECB exchange rates and use it for an applications
 
 Example 1:
@@ -46,7 +46,8 @@ Example 2:
 	)
 
 	func main() {
-		rates, err := ecbrates.Load()
+		rates, err := ecbrates.Load() // load last 90 days
+		// rates, err := ecbrates.LoadAll() // <- load ALL historical data, lots of data!
 		if err != nil {
 			log.Fatal("Error: ", err)
 		}
@@ -107,8 +108,20 @@ const (
 	USD Currency = "USD" // US Dollar ($)
 	ZAR Currency = "ZAR" // South African Rand (ZAR)
 
+	// Historical currencies
+	CYP Currency = "CYP"
+	EEK Currency = "EEK"
+	ISK Currency = "ISK"
+	LVL Currency = "LVL"
+	MTL Currency = "MTL"
+	SIT Currency = "SIT"
+	SKK Currency = "SKK"
+	ROL Currency = "ROL"
+	TRL Currency = "TRL"
+
 	ratesLastURL   = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
 	rates90daysURL = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml"
+	ratesAllURL    = "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml"
 )
 
 // Currency type as a link to string
@@ -125,6 +138,9 @@ var Currencies = []Currency{
 	AUD, BGN, BRL, CAD, CHF, CNY, CZK, DKK, EUR, GBP, HKD,
 	HRK, HUF, IDR, ILS, INR, JPY, KRW, LTL, MXN, MYR, NOK,
 	NZD, PHP, PLN, RON, RUB, SEK, SGD, THB, TRY, USD, ZAR,
+
+	// Historical currencies
+	CYP, EEK, ISK, LVL, MTL, SIT, SKK, ROL, TRL,
 }
 
 // IsValid check Currency for valid value
@@ -145,9 +161,14 @@ func New() (*Rates, error) {
 	return r, err
 }
 
-// Load - create a new instances of the rates and fetch a historical data from ECB
+// Load - create a new instances of the rates and fetch data for the last 90 days from ECB
 func Load() ([]Rates, error) {
 	return fetch90days()
+}
+
+// LoadAll - create a new instances of the rates and fetch all historical data from ECB
+func LoadAll() ([]Rates, error) {
+	return fetchAll()
 }
 
 // Convert a value "from" one Currency -> "to" other Currency
@@ -218,10 +239,19 @@ func (r *Rates) fetchDay() error {
 
 // Fetch a lot of exchange rates
 func fetch90days() ([]Rates, error) {
+	return fetchHistorical(rates90daysURL)
+}
+
+// Fetch even more exchange rates
+func fetchAll() ([]Rates, error) {
+	return fetchHistorical(ratesAllURL)
+}
+
+func fetchHistorical(url string) ([]Rates, error) {
 
 	var rates []Rates
 
-	response, err := http.Get(rates90daysURL)
+	response, err := http.Get(url)
 	if err != nil {
 		return rates, err
 	}
